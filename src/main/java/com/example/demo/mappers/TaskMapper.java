@@ -14,6 +14,9 @@ public interface TaskMapper {
     @Mapping(source = "user.id", target = "userId")
     TaskDto toDto(Task task);
 
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "categories", ignore = true)
+    Task toEntity(TaskDto dto);
 
     List<TaskDto> toDtoList(List<Task> tasks);
 
