@@ -1,6 +1,7 @@
 package com.example.demo.services.impl;
 
 
+import com.example.demo.dto.CategoryDto;
 import com.example.demo.dto.TaskDto;
 import com.example.demo.dto.UserCreateDto;
 import com.example.demo.dto.UserDto;
@@ -48,12 +49,16 @@ public class TaskServiceImpl implements TaskService {
         User user = userRepository.findById(dto.getUserId()).orElse(null);
         task.setUser(user);
 
-
-        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
+        if (dto.getCategories() != null) {
             task.setCategories(
-                    categoryRepository.findAllById(dto.getCategoryIds())
+                    dto.getCategories().stream()
+                            .map(CategoryDto::getId)
+                            .map(categoryRepository::findById)
+                            .flatMap(java.util.Optional::stream)
+                            .toList()
             );
         }
+
 
         return mapper.toDto(repository.save(task));
     }
@@ -67,12 +72,16 @@ public class TaskServiceImpl implements TaskService {
         task.setText(dto.getText());
         task.setCompleted(dto.isCompleted());
 
-
-        if (dto.getCategoryIds() != null) {
+        if (dto.getCategories() != null) {
             task.setCategories(
-                    categoryRepository.findAllById(dto.getCategoryIds())
+                    dto.getCategories().stream()
+                            .map(CategoryDto::getId)
+                            .map(categoryRepository::findById)
+                            .flatMap(java.util.Optional::stream)
+                            .toList()
             );
         }
+
 
         return mapper.toDto(repository.save(task));
     }

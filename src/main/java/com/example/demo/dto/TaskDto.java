@@ -11,5 +11,5 @@ public class TaskDto {
     private String text;
     private boolean completed;
     private Long userId;
-    private List<Long> categoryIds;
+    private List<CategoryDto> categories;
 }

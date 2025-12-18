@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { TaskMapper.class})
 public interface UserMapper {
 
     UserDto toDto(User user);
