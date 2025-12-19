@@ -1,11 +1,11 @@
 package com.example.demo.repositories;
 
-import com.example.demo.models.User;
+import com.example.demo.models.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail(String email);
+public interface PermissionRepository extends JpaRepository<Permission, Long> {
+    Permission findByName(String name);
 }
