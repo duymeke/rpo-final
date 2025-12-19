@@ -1,0 +1,32 @@
+services:
+  task-backend:
+    build: .
+    container_name: 'task-backend'
+    depends_on:
+      - database-service
+    environment:
+      - SPRING.DATASOURCE.URL=jdbc:postgresql://database-service:5432/final_db
+      - SPRING.DATASOURCE.USERNAME=postgres
+      - SPRING.DATASOURCE.PASSWORD=1234
+      - SPRING.JPA.HIBERNATE.DDL-AUTO=none
+      - SPRING.JPA.SHOW-SQL=true
+    ports:
+      - 8888:8080
+  database-service:
+    image: 'postgres'
+    container_name: 'database-service'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=final_db
+    ports:
+      - 2345:5432
+  test-database-service:
+    image: 'postgres'
+    container_name: 'test-database-service'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=final_db
+    ports:
+      - 2346:5432
