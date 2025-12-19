@@ -11,9 +11,9 @@ import java.util.List;
 public interface TaskService {
 
 
-    List<TaskDto> getAll();
-    TaskDto getById(Long id);
+    List<TaskDto> getAll(Long userId);
+    TaskDto getById(Long id, Long userId);
     TaskDto create(TaskDto taskDto);
-    TaskDto update(Long id, TaskDto taskDto);
-    boolean delete(Long id);
+    TaskDto update(Long id, TaskDto taskDto, Long userId);
+    boolean delete(Long id, Long userId);
 }

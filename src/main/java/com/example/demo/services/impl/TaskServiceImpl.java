@@ -16,6 +16,7 @@ import com.example.demo.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,13 +31,28 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public List<TaskDto> getAll() {
-        return mapper.toDtoList(repository.findAll());
+    public List<TaskDto> getAll(Long userId) {
+        if (userId == null) {
+            return List.of();
+        }
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return List.of();
+        }
+        return mapper.toDtoList(repository.findByUser(user));
     }
 
     @Override
-    public TaskDto getById(Long id) {
-        return mapper.toDto(repository.findById(id).orElse(null));
+    public TaskDto getById(Long id, Long userId) {
+        Task task = repository.findById(id).orElse(null);
+        if (task == null) {
+            return null;
+        }
+
+        if (userId != null && task.getUser() != null && !task.getUser().getId().equals(userId)) {
+            return null;
+        }
+        return mapper.toDto(task);
     }
 
     @Override
@@ -51,11 +67,13 @@ public class TaskServiceImpl implements TaskService {
 
         if (dto.getCategories() != null) {
             task.setCategories(
-                    dto.getCategories().stream()
-                            .map(CategoryDto::getId)
-                            .map(categoryRepository::findById)
-                            .flatMap(java.util.Optional::stream)
-                            .toList()
+                    new ArrayList<>(
+                            dto.getCategories().stream()
+                                    .map(CategoryDto::getId)
+                                    .map(categoryRepository::findById)
+                                    .flatMap(java.util.Optional::stream)
+                                    .toList()
+                    )
             );
         }
 
@@ -64,9 +82,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDto update(Long id, TaskDto dto) {
+    public TaskDto update(Long id, TaskDto dto, Long userId) {
         Task task = repository.findById(id).orElse(null);
         if (task == null || dto == null) return null;
+
+        if (userId != null && task.getUser() != null && !task.getUser().getId().equals(userId)) {
+            return null;
+        }
 
         task.setTitle(dto.getTitle());
         task.setText(dto.getText());
@@ -74,11 +96,13 @@ public class TaskServiceImpl implements TaskService {
 
         if (dto.getCategories() != null) {
             task.setCategories(
-                    dto.getCategories().stream()
-                            .map(CategoryDto::getId)
-                            .map(categoryRepository::findById)
-                            .flatMap(java.util.Optional::stream)
-                            .toList()
+                    new ArrayList<>(
+                            dto.getCategories().stream()
+                                    .map(CategoryDto::getId)
+                                    .map(categoryRepository::findById)
+                                    .flatMap(java.util.Optional::stream)
+                                    .toList()
+                    )
             );
         }
 
@@ -87,11 +111,19 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Long id, Long userId) {
+        Task task = repository.findById(id).orElse(null);
+        if (task == null) {
+            return false;
+        }
+
+        if (userId != null && task.getUser() != null && !task.getUser().getId().equals(userId)) {
+            return false;
+        }
 
         repository.deleteById(id);
 
-        TaskDto delete = getById(id);
+        TaskDto delete = getById(id, userId);
 
         if (Objects.isNull(delete)) {
             return true;
