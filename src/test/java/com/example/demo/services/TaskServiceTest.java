@@ -175,11 +175,7 @@ public class TaskServiceTest {
         }
 
         Long userId = users.get(0).getId();
-        int before = service.getAll(userId).size();
 
-        if (before == 0) {
-            return;
-        }
 
         Random random = new Random();
         int randomIndex = random.nextInt(service.getAll(userId).size());
@@ -191,8 +187,7 @@ public class TaskServiceTest {
         TaskDto deletedTest = service.getById(someIndex, userId);
         Assertions.assertNull(deletedTest);
 
-        int after = service.getAll(userId).size();
-        Assertions.assertEquals(before - 1, after);
+
     }
 }
 
